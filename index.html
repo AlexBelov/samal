@@ -1,0 +1,53 @@
+<html>
+  <input id="query" type="text">
+  <button id="submit">Submit</button>
+  <div id="result">
+  </div>
+  <div id="not-bad" style="display: none;">
+    <img src="https://dl.dropboxusercontent.com/u/36906193/11%20sem/samal/11.jpg" style="width: 172px;">
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/lodash/4.16.6/lodash.min.js"></script>
+  <script>
+   window.onload = function () {
+     var endpoint = "https://api.projectoxford.ai/luis/v2.0/apps/b7b48985-1230-41d7-95dd-06644cec6f4f?subscription-key=a67c3bf66c624cbd86ed6c3365f819e3&q=";
+
+     var calculate = function(action, numbers) {
+       if (action == "Make Labs") {
+         $("#not-bad").show();
+         console.log("Show Samal");
+         return "";
+       }
+       else if (action == "Addition") {
+         return _.reduce(numbers, function(memo, num){ return memo + num; }, 0);
+       }
+       else if (action == "Multiplication") {
+         return _.reduce(numbers, function(memo, num){ return memo * num; }, 1);
+       }
+       else {
+         return "";
+       }
+     };
+
+     $("#submit").click(function(){
+       $("#not-bad").hide();
+       var query = $("#query").val();
+       console.log(query);
+       $.get(endpoint + encodeURIComponent(query), function(data) {
+         console.log(data);
+         var result = calculate(
+           data.topScoringIntent.intent,
+           _.map(
+             data.entities,
+             function(e) {
+               return parseInt(e.entity);
+             }
+           )
+         );
+         $("#result").html(result);
+       });
+     });
+   };
+  </script>
+</html>
